@@ -15,7 +15,7 @@ export default function Test() {
                         {color:'red', background: 'yellow'}
                       ]}>하이</Box>
       <Box shadow={2} width="300px"
-                      height="300px">하이</Box>
+                      height="300px">하이d</Box>
       <Box round border={1} shadow={3}
                             width="300px"
                             height="300px">하이</Box>
