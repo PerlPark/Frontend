@@ -28,18 +28,8 @@ export default function Home() {
     variableWidth: true,
     slidesToShow: 1,
     slidesToScroll: 1,
-    // autoplay: true,
     speed: 1000, //슬라이드 속도
-    // autoplaySpeed: 0, //한 슬라이드에 머무르는 시간
     cssEase: 'ease',
-    responsive: [
-      {
-        breakpoint: 576,
-        settings: {
-          speed: 1000, //슬라이드 속도
-        }
-      },
-    ]
   };
 
   return (
