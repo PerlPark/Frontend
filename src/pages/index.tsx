@@ -1,22 +1,12 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import { Layout } from "components/layout";
 import styled from "@emotion/styled";
 import { min, max, Colors } from "components/ui";
 import { breakpoints as bp } from "components/ui";
 import Image from 'next/image';
-import { ProductList } from "components/product-card-list";
-import axios, { AxiosResponse } from 'axios';
 import { Dunning } from "components/main/dunning";
 
 export default function Home() {
-  const [Data, setData] = useState<object>();
-  useEffect(() => {  
-    axios.get(process.env.NEXT_PUBLIC_API_URL as string + '/exhibition/best', { withCredentials: true }).then((res: AxiosResponse) => {
-      if (res.data) {
-        setData(res.data.exhibition.itemInfo);
-      }
-    }) 
-  }, [])
 
   return (
     <Layout whiteHeader>
@@ -80,7 +70,6 @@ export default function Home() {
         </SectionHeader>
 
         <ProductListWrap>
-          <ProductList data={[Data]} />
           {/* 페이지 생성되면 url 변경 */}
           <a href="/all" className="allProductLink">
             <div className="allProductCard">
