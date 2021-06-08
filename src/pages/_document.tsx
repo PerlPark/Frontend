@@ -11,6 +11,7 @@ class MyDocument extends Document {
       <Html>
         <Head>
           <script src="https://cdn.bootpay.co.kr/js/bootpay-3.3.1.min.js" type="application/javascript"></script>
+          <script src="common/webfont.js" type="application/javascript"></script>
         </Head>
         <body>
           <Main />
