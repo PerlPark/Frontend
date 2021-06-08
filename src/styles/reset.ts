@@ -135,7 +135,7 @@ export const reset = css`
     box-sizing: border-box;
   }
   html {
-    font-family:'Spoqa Han Sans Neo', 'sans-serif' !important;
+    font-family:'Spoqa Han Sans Neo', 'Noto Sans KR', 'sans-serif' !important;
     background-color: #FCFCFC;
   }
   a {
