@@ -1,6 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react'
 import axios, { AxiosResponse } from 'axios';
-import WebFont from 'webfontloader';
 
 export default function Context(props: any) {
     const [userObject, setUserObject] = useState<any>();
@@ -9,12 +8,6 @@ export default function Context(props: any) {
             if (res.data) {
                 console.log(res.data);
                 setUserObject(res.data);
-            }
-        });
-        WebFont.load({
-            custom: {
-                families: ['Spoqa Han Sans Neo'],
-                urls: ['/SpoqaHanSansNeo.css']
             }
         });
     }, [])
