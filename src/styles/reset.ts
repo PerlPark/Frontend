@@ -142,4 +142,12 @@ export const reset = css`
     color: inherit;
     text-decoration: none;
   }
+  body.dimmed {
+    overflow: hidden;
+  }
+  body.dimmed_mo {
+    @media (max-width: 768px) {
+      overflow: hidden;
+    }
+  }
 `;

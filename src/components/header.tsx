@@ -1,20 +1,22 @@
 import React, { useContext, useState } from "react";
 import styled from "@emotion/styled";
-import { min, max, Button, Colors } from "components/ui";
+import { min, max, Button, Colors, DimmedOnlyMobile } from "components/ui";
 import { myContext } from "../context";
 import { User } from '../types/logintypes';
 import { LogoutButtons } from 'components/logout-buttons';
+import { MobileMembersMenu } from 'components/members-menu';
 
 export const Header = (props: any) => {
   const userObject = useContext(myContext) as User;
   const [open, setOpen] = useState<boolean>(false);
-  
+
+
   function toggleMenu(){
     setOpen(!open);
     if(!open){
-      document.body.style.overflow = 'hidden';
+      document.body.classList.add('dimmed_mo');
     } else {
-      document.body.removeAttribute('style');
+      document.body.classList.remove('dimmed_mo');
     }
   }
 
@@ -24,9 +26,9 @@ export const Header = (props: any) => {
       <Desktop className="desktop wrap">
         <a href="/"><img src={props.white ? '/logo_white.svg' : '/logo.png'} height="44" /></a>
         <RightElements>
+          <a onClick={()=>alert('준비 중입니다.')}>서비스 소개</a>
           <a href="/all">코칭 프로그램</a>
           {userObject ? <LogoutButtons white={props.white ? true : false} /> : <Button onClick = {() =>  window.location.href = "/login"} type={props.white ? 'loginWhite' : 'login'}>로그인</Button>}
-          {/*<Button url={userObject? undefined : "/login"} type="login">{userObject? "로그아웃" : "로그인"}</Button> */}
         </RightElements>
       </Desktop>
       {/* Mobile */}
@@ -37,7 +39,10 @@ export const Header = (props: any) => {
         <MobileMenu className={open ? 'open' : ''}>
           <a href="/"><img src="/logo.png" height="22" /></a>
           <ul>
-            {userObject ? null : <li><a href="/login">로그인</a></li>}
+            {userObject ? <MobileMembersMenu username={userObject.username} /> : <li><a href="/login">로그인</a></li>}
+            <li>
+              <a onClick={()=>alert('준비 중입니다.')}>서비스 소개</a>
+            </li>
             <li>
               <a href="/all">코칭 프로그램</a>
             </li>
@@ -45,7 +50,9 @@ export const Header = (props: any) => {
         </MobileMenu>
       </Mobile>
       {
-        open? <Dimmed/> : null 
+        open
+        ? <DimmedOnlyMobile onClick={toggleMenu}/>
+        : null
       }
     </Container>
   )
@@ -82,6 +89,7 @@ const RightElements = styled.div`
     display: inline-block;
     text-align: center;
     margin-right: 68px;
+    cursor: pointer;
   
     font-weight: 500;
     font-size: 16px;
@@ -117,19 +125,23 @@ const MobileMenuBtn = styled.button`
   &.close {
     background-image: url(/icon/close_56px.svg);
     position: relative;
-    z-index: 3;
+    z-index: 11;
   }
 `;
 
 const MobileMenu = styled.div`
   display: none;
   text-align: left;
-  width: calc(100vw - 80px);
+  width: 75%;
   height: 100vh;
   background: ${Colors.white};
   border-top-right-radius: 20px;
   border-bottom-right-radius: 20px;
   padding: 18px 20px;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 167%;
+  color: ${Colors.gray1};
 
   &.open {
     display: block;
@@ -140,25 +152,14 @@ const MobileMenu = styled.div`
   }
 
   a {
-    font-weight: 500;
-    font-size: 16px;
-    color: ${Colors.gray1};
+    color: inherit;
+    cursor: pointer;
   }
 
-  ul {
+  > ul {
     margin-top: 44px;
   }
-  li {
+  > ul > li {
     margin-bottom: 22px;
   }
-`;
-
-const Dimmed = styled.div`
-  position: fixed;
-  top: -50%;
-  left: -50%;
-  width: 1000vw;
-  height: 1000vh;
-  background: rgba(20, 20, 42, 0.5);
-  z-index: 2;
 `;

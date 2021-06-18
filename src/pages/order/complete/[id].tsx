@@ -7,7 +7,7 @@ import { priceFormat } from "components/formatter";
 import { Step } from "components/step";
 import Router from "next/router";
 import { Title } from "components/order/common-styles";
-import axios, { AxiosResponse } from 'axios';
+import axios from 'axios';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const optionId = context.query.id;
@@ -44,8 +44,8 @@ function OrderComplete({data}: InferGetServerSidePropsType<typeof getServerSideP
 
   // 결제최종완료 처리 API
   axios.get(process.env.NEXT_PUBLIC_API_URL as string +`/pay/aftercomplete/${orderId}`)
-        .then((res: AxiosResponse) => {
-          console.log(res);
+        .then(() => {
+          // console.log(res);
         })
         .catch((err : any) => {
           console.log(err);

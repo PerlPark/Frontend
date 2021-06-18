@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef, useContext } from "react";
 import { Layout } from "components/layout";
 import styled from "@emotion/styled";
 import Image from 'next/image';
-import { min, max, BtnCss, Tags, Button, Colors, Text, Buying } from "components/ui";
+import { min, max, BtnCss, Tags, Button, Colors, Text, Buying, DimmedOnlyMobile } from "components/ui";
 import { LikeBtn } from "components/like-button";
 import { Price } from "components/price";
 import AnchorTab from 'components/tab';
@@ -12,6 +12,7 @@ import { useRouter } from 'next/router';
 import { myContext } from "context";
 import { User } from 'types/logintypes';
 import Loader from "react-loader-spinner";
+import axios, { AxiosResponse } from 'axios';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const itemId = context.query.id;
@@ -31,6 +32,43 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 export default function Details({itemData}: InferGetServerSidePropsType<typeof getServerSideProps>){
   const { itemId, title, tag, options } = itemData;
   const router = useRouter();
+
+  const userObject = useContext(myContext) as User;
+
+  const [userLikeState, setUserLikeState] = useState<boolean>(false); // 좋아요 상태
+  const [RunOnce, setRunOnce] = useState<boolean>(true);
+
+  if(userObject !== undefined && RunOnce){ // api로딩 후 처음 한 번만 실행
+    // 자신이 좋아요 클릭했었던 경우 체크된 아이콘 표시
+    setUserLikeState(userObject.likeItemIds.indexOf(itemId) === -1? false : true);
+    setRunOnce(false);
+  }
+
+  const chageUserLikeState = () => {
+    if(userLikeState){ // 좋아요 취소
+      if(userObject){
+        setUserLikeState(false);
+        axios.get(process.env.NEXT_PUBLIC_API_URL as string + `/item/cancelheart/${userObject.userId}` + `?itemId=${itemId}`, { withCredentials: true }).then((res: AxiosResponse) => {
+          if (res.data){
+            //console.log(res);
+          }
+        }) 
+      } else{
+        alert('로그인이 필요합니다.');
+      }      
+    } else { // 좋아요
+      if(userObject){
+        setUserLikeState(true);
+        axios.get(process.env.NEXT_PUBLIC_API_URL as string + `/item/heart/${userObject.userId}` + `?itemId=${itemId}`, { withCredentials: true }).then((res: AxiosResponse) => {
+          if (res.data){
+            //console.log(res);
+          }
+        })  
+      } else{
+        alert('로그인이 필요합니다.');
+      }
+    }
+  }  
 
   function routeToOrder(userId: any, itemId: any, optionId: any, type: string){
     if(type === 'workbook'){
@@ -55,7 +93,7 @@ export default function Details({itemData}: InferGetServerSidePropsType<typeof g
   const askSectionRef = useRef<HTMLDivElement>(null);
   const tabHeight:number = 161; //109 + 52
 
-  const userObject = useContext(myContext) as User;
+  
 
   function onClickListener(optionId: number){
     // 비로그인 || 로그인 api 받기 전에 클릭할 경우 경고
@@ -111,7 +149,7 @@ export default function Details({itemData}: InferGetServerSidePropsType<typeof g
   function onClickListenerMobileBuyBtn(){
     if(!optionPanel){
       setOptionPanel(true);
-      document.body.style.overflow = 'hidden';
+      document.body.classList.add('dimmed_mo');
     }
     else if(selectedOption > 0){
       setButtonText(loader);
@@ -120,11 +158,11 @@ export default function Details({itemData}: InferGetServerSidePropsType<typeof g
   }
   function closeOptionPanel(){
     setOptionPanel(false);
-    document.body.style.overflow = 'auto';
+    document.body.classList.remove('dimmed_mo');
   }
 
   return (
-    <MobilePadding className={optionPanel ? 'dimmed' : ''}>
+    <MobilePadding>
     <Layout title={title}>
       <ProductInfo className="wrap">
         <div className="leftArea">
@@ -143,7 +181,7 @@ export default function Details({itemData}: InferGetServerSidePropsType<typeof g
           </DefaultInfo>
           <FunctionsAndPriceInfo>
             <div className="likeBtn">{/* 로그인 안된 상태에서 찜하기 버튼 눌렀을 때 케이스 */}
-              <LikeBtn state={false} />
+              <LikeBtn state={userLikeState} onClick={chageUserLikeState} />
             </div>
             <div className="rightArea">
               <Price discountPrice={options[0].discountPrice} price={options[0].price} />
@@ -155,7 +193,7 @@ export default function Details({itemData}: InferGetServerSidePropsType<typeof g
       </ProductInfo>
       <MobileFloatingBtn>
         <OptionPanel className={optionPanel ? 'visible' : ''}>
-          <h5 onClick={closeOptionPanel}>상품 옵션</h5>
+          <h5>상품 옵션</h5>
           <ul>
           {
             options.map((item: any) => (
@@ -178,14 +216,16 @@ export default function Details({itemData}: InferGetServerSidePropsType<typeof g
           </ul>
         </OptionPanel>
         <div className="btnWrap">
-          <LikeBtn state={false} small border />
+          <LikeBtn state={userLikeState} onClick = {chageUserLikeState} small border />
           <MobileBuyBtn onClick={onClickListenerMobileBuyBtn}>{buttonText}</MobileBuyBtn>
         </div>
       </MobileFloatingBtn>
-      <CoachProfile className="wrap">
+      <div className="wrap">
+        <CoachProfile>
           <img src={`/detail/${itemId}/coach.png`} className="img_pc"/>
           <img src={`/detail/${itemId}/coach_mobile.png`} className="img_mo"/>
-      </CoachProfile>
+        </CoachProfile>
+      </div>
       <AnchorTab create={{
                           //  workbook: { sectionRef: 'workbook' },
                            coaching: { sectionRef: 'coaching' },
@@ -229,6 +269,11 @@ export default function Details({itemData}: InferGetServerSidePropsType<typeof g
         </DetailInfoContainer>
       </DetailInfo>
     </Layout>
+    {
+      optionPanel
+      ? <DimmedOnlyMobile onClick={closeOptionPanel} style={{zIndex: 8}}/>
+      : null
+    }
     </MobilePadding>
   )
 }
@@ -237,23 +282,12 @@ const MobilePadding = styled.div`
   ${max[1]}{
     padding-bottom: 72px;
   }
-
-  &.dimmed::before {
-    content: '';
-    display: block;
-    position: fixed;
-    top: -50%;
-    left: -50%;
-    width: 1000vw;
-    height: 1000vh;
-    background: rgba(20, 20, 42, 0.5);
-    z-index: 2;
-  }
 `;
 
 const ProductInfo = styled.div`
   margin-top: 12px;
-  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 4px ${Colors.gray4} solid;
 
   .leftArea {
     margin-bottom: 28px;
@@ -273,6 +307,8 @@ const ProductInfo = styled.div`
     align-items: flex-start;
     margin-top: 56px;
     margin-bottom: 93px;
+    padding-bottom: 0;
+    border-bottom : 0;
 
     .leftArea {
       flex-basis: 645px;
@@ -331,7 +367,7 @@ const MobileFloatingBtn = styled.div`
   position: fixed;
   left: 0;
   bottom: 0;
-  z-index: 20;
+  z-index: 9;
   width: 100%;
 
   .btnWrap {
@@ -352,6 +388,7 @@ const MobileBuyBtn = styled.button`
   flex-grow: 1;
   height: 36px;
   margin-left: 4px;
+  font-size: 0.875rem;
 `;
 
 const OptionPanel = styled.div`
@@ -445,7 +482,6 @@ const OptionDesc = styled.p`
 
 
 const CoachProfile = styled.div`
-  border-top: 4px ${Colors.gray4} solid;
   padding-top: 16px;
 
   img {
