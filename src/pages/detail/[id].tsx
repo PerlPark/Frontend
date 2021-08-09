@@ -1,18 +1,18 @@
-import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
+import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import React, { useState, useEffect, useRef, useContext } from "react";
 import { Layout } from "components/layout";
 import styled from "@emotion/styled";
-import Image from 'next/image';
+import Image from "next/image";
 import { min, max, BtnCss, Tags, Button, Colors, Text, Buying, DimmedOnlyMobile } from "components/ui";
 import { LikeBtn } from "components/like-button";
 import { Price } from "components/price";
-import AnchorTab from 'components/tab';
+import AnchorTab from "components/tab";
 import { ContentTemplate, AskContentTemplate } from "components/detail-content-template";
-import { useRouter } from 'next/router';
+import { useRouter } from "next/router";
 import { myContext } from "context";
-import { User } from 'types/logintypes';
+import { User } from "types/logintypes";
 import Loader from "react-loader-spinner";
-import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosResponse } from "axios";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const itemId = context.query.id;
@@ -54,7 +54,7 @@ export default function Details({itemData}: InferGetServerSidePropsType<typeof g
           }
         }) 
       } else{
-        alert('로그인이 필요합니다.');
+        alert("로그인이 필요합니다.");
       }      
     } else { // 좋아요
       if(userObject){
@@ -65,27 +65,27 @@ export default function Details({itemData}: InferGetServerSidePropsType<typeof g
           }
         })  
       } else{
-        alert('로그인이 필요합니다.');
+        alert("로그인이 필요합니다.");
       }
     }
   }  
 
   function routeToOrder(userId: any, itemId: any, optionId: any, type: string){
-    if(type === 'workbook'){
+    if(type === "workbook"){
         router.push({
-        pathname: '/receipt',
+        pathname: "/receipt",
         query: {userId: userId, itemId: itemId, optionId: optionId},
-      }, '/order');
+      }, "/order");
     } else {
       router.push({
-        pathname: '/order/coaching',
+        pathname: "/order/coaching",
         query: {userId: userId, itemId: itemId, optionId: optionId},
-      }, '/order');
+      }, "/order");
     }
   }
 
   // Tab Control
-  const [activeTab, setActiveTab] = useState<string>('workbook');
+  const [activeTab, setActiveTab] = useState<string>("workbook");
   const DetailInfoContainerRef = useRef<HTMLDivElement>(null);
   // const workbookSectionRef = useRef<HTMLDivElement>(null);
   const coachingSectionRef = useRef<HTMLDivElement>(null);
@@ -97,7 +97,7 @@ export default function Details({itemData}: InferGetServerSidePropsType<typeof g
 
   function onClickListener(optionId: number){
     // 비로그인 || 로그인 api 받기 전에 클릭할 경우 경고
-    userObject? routeToOrder(userObject.userId, itemId, optionId, options[optionId-1].type) : alert('로그인이 필요합니다.\n (로그인 상태라면 버튼을 다시 클릭해주세요.)');
+    userObject? routeToOrder(userObject.userId, itemId, optionId, options[optionId-1].type) : alert("로그인이 필요합니다.\n (로그인 상태라면 버튼을 다시 클릭해주세요.)");
   //userObject? routeToOrder(userObject.userId, itemId, optionId, options[optionId-1].type) : routeToOrder(1, itemId, optionId, options[optionId-1].type)
   }
   
@@ -113,20 +113,20 @@ export default function Details({itemData}: InferGetServerSidePropsType<typeof g
         const onAskSection = window.scrollY+tabHeight >= askSectionRef.current.offsetTop;
 
         if(false){
-          setActiveTab('workbook');
+          setActiveTab("workbook");
         }
         else if(onCoachingSection){
-          setActiveTab('coaching');
+          setActiveTab("coaching");
         }
         else if(false){
-          setActiveTab('review');
+          setActiveTab("review");
         }
         else if(onAskSection){
-          setActiveTab('ask');
+          setActiveTab("ask");
         }
       }
     };
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
   },[]);
 
 
@@ -143,13 +143,13 @@ export default function Details({itemData}: InferGetServerSidePropsType<typeof g
   
   const [optionPanel, setOptionPanel] = useState<boolean>(false);
   const [selectedOption, selectOption] = useState<number>(0);
-  const [buttonText, setButtonText] = useState<any>('구매하기');
+  const [buttonText, setButtonText] = useState<any>("구매하기");
   const loader = <Loader type="TailSpin" color={Colors.white} height={20} width={20} timeout={0} radius={3}/>
 
   function onClickListenerMobileBuyBtn(){
     if(!optionPanel){
       setOptionPanel(true);
-      document.body.classList.add('dimmed_mo');
+      document.body.classList.add("dimmed_mo");
     }
     else if(selectedOption > 0){
       setButtonText(loader);
@@ -158,7 +158,7 @@ export default function Details({itemData}: InferGetServerSidePropsType<typeof g
   }
   function closeOptionPanel(){
     setOptionPanel(false);
-    document.body.classList.remove('dimmed_mo');
+    document.body.classList.remove("dimmed_mo");
   }
 
   return (
@@ -192,7 +192,7 @@ export default function Details({itemData}: InferGetServerSidePropsType<typeof g
         </div>
       </ProductInfo>
       <MobileFloatingBtn>
-        <OptionPanel className={optionPanel ? 'visible' : ''}>
+        <OptionPanel className={optionPanel ? "visible" : ""}>
           <h5>상품 옵션</h5>
           <ul>
           {
@@ -204,7 +204,7 @@ export default function Details({itemData}: InferGetServerSidePropsType<typeof g
                 </div>
                 <TypeAndPrice>
                   <div>
-                    <img src={item.type === 'coaching' ? '/icon/coach_64p.svg' : '/icon/workbook_64p.svg'} />
+                    <img src={item.type === "coaching" ? "/icon/coach_64p.svg" : "/icon/workbook_64p.svg"} />
                     {item.type}
                   </div>
                   <Price discountPrice={item.discountPrice} price={item.price} />
@@ -227,10 +227,10 @@ export default function Details({itemData}: InferGetServerSidePropsType<typeof g
         </CoachProfile>
       </div>
       <AnchorTab create={{
-                          //  workbook: { sectionRef: 'workbook' },
-                           coaching: { sectionRef: 'coaching' },
-                          //  review: { sectionRef: 'review' },
-                           ask: { sectionRef: 'ask' }
+                          //  workbook: { sectionRef: "workbook" },
+                           coaching: { sectionRef: "coaching" },
+                          //  review: { sectionRef: "review" },
+                           ask: { sectionRef: "ask" }
                         }}
                   active={activeTab}
                   scrollfn={windowScroll}/>
@@ -432,17 +432,17 @@ const Option = styled.li`
     display: none;
   }
   input[type=radio] + label::before {
-    content: '';
+    content: "";
     display: inline-block;
     width: 16px;
     height: 16px;
-    background: url('/icon/checkbox_16p.svg') center/16px 16px no-repeat;
+    background: url("/icon/checkbox_16p.svg") center/16px 16px no-repeat;
     vertical-align: middle;
     margin-right: 8px;
     margin-bottom: 1px;
   }
   input[type=radio]:checked + label::before {
-    background-image: url('/icon/checkbox_filled_16p.svg');
+    background-image: url("/icon/checkbox_filled_16p.svg");
   }
 
   label {
